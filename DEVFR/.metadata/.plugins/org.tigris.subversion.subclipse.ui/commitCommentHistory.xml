@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CommitComments>	<CommitComment>modification du methode de retourner listPlayers</CommitComment>
+	<CommitComment>suppression du code de l&apos;autoincrement au niveau du PlayerManager</CommitComment>
+	<CommitComment>Correction de persistance Rochd</CommitComment>
+	<CommitComment>add HasValidName to accept subscriber username
+</CommitComment>
+	<CommitComment>Organisation du code</CommitComment>
+	<CommitComment>Ajout de tests de parametres pour Player sur changeSubsPassword</CommitComment>
+	<CommitComment>changement de PlayerTest pour le repertoire tests</CommitComment>
+	<CommitComment>Ajout des commentaires pour javaDoc</CommitComment>
+	<CommitComment>Ajout d&apos;un constructeur à SubscriberException</CommitComment>
+	<CommitComment>ajout test du changepassword on null values class PlayerTest</CommitComment>
+</CommitComments>

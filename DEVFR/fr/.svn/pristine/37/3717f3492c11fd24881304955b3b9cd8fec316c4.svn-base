@@ -1,0 +1,103 @@
+package fr.uv1.bettingServices.competition;
+import fr.uv1.bettingServices.Competitor;
+import fr.uv1.bettingServices.bet.Bet;
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.exceptions.ExistingCompetitorException;
+import fr.uv1.utils.*;
+import java.util.*;
+//TODO import team
+/**
+ * @author gargouri <br>
+ * <br> 
+ * Competition Class <br> 
+ * 
+ */
+public class Competition {
+	
+	private String name;
+	private Date closingDate;
+	private ArrayList<Competitor> competitors = new ArrayList<Competitor>();
+	private Competitor winner;
+	private ArrayList<Competitor> podium = new ArrayList<Competitor>();
+	private ArrayList<Bet> bets = new ArrayList<Bet>();
+
+    public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Date getClosingDate() {
+		return closingDate;
+	}
+	public void setClosingDate(Date closingDate) {
+		this.closingDate = closingDate;
+	}
+	public ArrayList<Competitor> getCompetitors() {
+		return competitors;
+	}
+	public void setCompetitors(ArrayList<Competitor> competitors) {
+		this.competitors = competitors;
+	}
+	public Competitor getWinner() {
+		return winner;
+	}
+	public void setWinner(Competitor winner) {
+		this.winner = winner;
+	}
+	public ArrayList<Competitor> getPodium() {
+		return podium;
+	}
+	public void setPodium(ArrayList<Competitor> podium) {
+		this.podium = podium;
+	}
+	public ArrayList<Bet> getBets() {
+		return bets;
+	}
+	public void setBets(ArrayList<Bet> bets) {
+		this.bets = bets;
+	}
+
+	public Competition(String name, Date closingDate) throws BadParametersException{
+		super();
+		this.name = name;
+		this.closingDate = closingDate;
+	} 
+	
+	public void addCompetitor(Competitor c) throws ExistingCompetitorException{
+		for (Competitor item: this.competitors){
+			if( ((Competitor)item).equals(c) ){
+				throw new ExistingCompetitorException();
+			}
+		}
+		this.competitors.add(c);
+	}
+	
+	public void deleteCompetitor(Competitor c){
+		this.competitors.remove(c);
+	}
+	
+	public Competitor findCompetitor(String name){
+        for (Competitor c : getCompetitors()) {
+            if (c instanceof Team && ((Team) c).getName().equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+	
+	//TODO : method: isClosed() because we need this method in Bet class
+    
+	public boolean isClosed(){
+        Date dateCourant = new Date(System.currentTimeMillis());
+        return (dateCourant.after(this.closingDate));
+	}
+	
+	public boolean equals(Competition c){
+		return this.getName() == c.getName();
+	}
+
+	
+
+}

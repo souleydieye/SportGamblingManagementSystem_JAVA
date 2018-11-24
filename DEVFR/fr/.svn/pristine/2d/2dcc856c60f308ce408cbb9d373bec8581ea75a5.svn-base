@@ -1,0 +1,23 @@
+package fr.uv1.bettingServices.competitor;
+
+
+/**
+ * @author Rochd Maliki
+ *
+ */
+
+public abstract class Competitor {
+	protected int idCompetitor;
+	
+	/**
+	 * @return true if the name of the Competitor is valis
+	 */
+	public abstract boolean hasValidName();
+		
+	public int getIdCompetitor(){
+		return idCompetitor;
+	}
+	public void setIdCompetitor(int id){
+		this.idCompetitor=id;
+	}
+}

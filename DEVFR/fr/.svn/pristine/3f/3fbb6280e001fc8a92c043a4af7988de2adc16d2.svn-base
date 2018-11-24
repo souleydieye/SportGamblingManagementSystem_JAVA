@@ -1,0 +1,198 @@
+package fr.uv1.bettingServices;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+
+import fr.uv1.bettingServices.exceptions.AuthenticationException;
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.exceptions.CompetitionException;
+import fr.uv1.bettingServices.exceptions.ExistingCompetitionException;
+import fr.uv1.bettingServices.exceptions.ExistingCompetitorException;
+import fr.uv1.bettingServices.exceptions.ExistingSubscriberException;
+import fr.uv1.bettingServices.exceptions.SubscriberException;
+import fr.uv1.bettingServices.manager.PlayersManager;
+import fr.uv1.bettingServices.player.Player;
+
+public class BettingSoft implements Betting{
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void authenticateMngr(String managerPwd) throws AuthenticationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String subscribe(String lastName, String firstName, String username, String borndate, String managerPwd)
+			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long unsubscribe(String username, String managerPwd)
+			throws AuthenticationException, ExistingSubscriberException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<List<String>> listSubscribers(String managerPwd) throws AuthenticationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addCompetition(String competition, Calendar closingDate, Collection<Competitor> competitors,
+			String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException, CompetitionException, BadParametersException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancelCompetition(String competition, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteCompetition(String competition, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addCompetitor(String competition, Competitor competitor, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
+			ExistingCompetitorException, BadParametersException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Competitor createCompetitor(String lastName, String firstName, String borndate, String managerPwd)
+			throws AuthenticationException, BadParametersException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Competitor createCompetitor(String name, String managerPwd)
+			throws AuthenticationException, BadParametersException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteCompetitor(String competition, Competitor competitor, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException, CompetitionException,
+			ExistingCompetitorException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void creditSubscriber(String username, long numberTokens, String managerPwd)
+			throws AuthenticationException, ExistingSubscriberException, BadParametersException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void debitSubscriber(String username, long numberTokens, String managerPwd)
+			throws AuthenticationException, ExistingSubscriberException, SubscriberException, BadParametersException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void settleWinner(String competition, Competitor winner, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException, CompetitionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void settlePodium(String competition, Competitor winner, Competitor second, Competitor third,
+			String managerPwd) throws AuthenticationException, ExistingCompetitionException, CompetitionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void betOnWinner(long numberTokens, String competition, Competitor winner, String username, String pwdSubs)
+			throws AuthenticationException, CompetitionException, ExistingCompetitionException, SubscriberException,
+			BadParametersException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void betOnPodium(long numberTokens, String competition, Competitor winner, Competitor second,
+			Competitor third, String username, String pwdSubs) throws AuthenticationException, CompetitionException,
+			ExistingCompetitionException, SubscriberException, BadParametersException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void changeSubsPwd(String username, String newPwd, String currentPwd)
+			throws AuthenticationException, BadParametersException {
+		// TODO Auto-generated method stub
+		
+		//	PlayersManager.changeSubsPwd(player, newPwd, currentPwd)
+	}
+
+	@Override
+	public ArrayList<String> infosSubscriber(String username, String pwdSubs) throws AuthenticationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteBetsCompetition(String competition, String username, String pwdSubs)
+			throws AuthenticationException, CompetitionException, ExistingCompetitionException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<List<String>> listCompetitions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Competitor> listCompetitors(String competition)
+			throws ExistingCompetitionException, CompetitionException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<String> consultBetsCompetition(String competition) throws ExistingCompetitionException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Competitor> consultResultsCompetition(String competition) throws ExistingCompetitionException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
+	
+	
+
+}

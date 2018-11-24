@@ -1,0 +1,306 @@
+package fr.uv1.bettingServices.manager;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Scanner;
+
+/**
+ * @Naanani Hamza
+ */
+
+/*********************************** REMARQUES **************************************
+ * Il reste à ajouter une méthode de vérification de PWDManager
+ * Il reste à revoir les autres exceptions que SQLException et ExistingCompetition Exception et les ajouter dans le code
+ * Il reste à revoir la méthode addCompetitor (j'ai pas bien saisi la table dans la base)???
+ * Il faut revoir diagramme de classe et discuter
+ * On peut mélanger les 2 classes pour avoir le Manager et comme ça , ça sera plus évident.
+ *
+ */
+
+public class CompetitionManager {
+	/**
+	 * Methode pour ajouter une competition
+	 */
+	public void addCompetition(Competition competition) throws SQLException,ExistingCompetition {
+
+		/* on va creer une nouvelle connection à la base de donnée */
+		Connection connection1 = DatabaseConnection.getConnection();
+
+		try {
+
+			/* avec cette preparedStatement on va inserer une competition à la base de données
+			 *
+			 */
+			PreparedStatement preparedStatement1 = connection1.prepareStatement("INSERT INTO competition (name, closingdate,"
+					+ "values (?, ?)");
+
+			if(competition.equals(findByName(competition.getName()))==false) {
+			preparedStatement1.setString(1, competition.getName());
+			preparedStatement1.setDate(2, java.sql.Date.valueOf(competition.getClosingDate().toString()));// car la valeur passée est de Type String
+			}
+			else{throw new ExistingCompetition();}
+			
+			
+			/* faire de la mise à jour */
+			preparedStatement1.executeUpdate();
+			/* on va executer la prepared statement */
+			preparedStatement1.close();
+			/* on va fermer la preparedSTatement*/
+			connection1.commit();
+			/*on va valider avec commit les executions faites*/
+
+		} catch (SQLException e1) {
+			try {
+
+				connection1.rollback();
+				/*on va annuler les executions faites si un problème arrive avec rollback*/
+
+			} catch (SQLException e2) {
+				e1.printStackTrace();
+				/*pour afficher les details de l'erreur pour le diagnostic pour mentionner ce qui arrivé
+				 *  et dans quel bout de code il y a un problème */
+			}
+		}
+		connection1.close();
+		/*on ferme la connection */
+	}
+
+/** 
+ * Méthode pour supprimer une competition
+ */
+	public static String deleteCompetition(String name) throws SQLException {
+		
+	Connection connection1 = DatabaseConnection.getConnection();
+	try{
+	PreparedStatement preparedStatement1 = connection1
+			.prepareStatement("DELETE FROM competition WHERE name LIKE ?");
+	preparedStatement1.setString(1, name );
+	Scanner sc = new Scanner(System.in);
+	int i = sc.nextInt();
+	
+	/*choix 0 pour la confirmation et 1 si non*/
+	System.out.println("select 0 for confirmation and 1 if not");
+	if(i==0){
+		preparedStatement1.executeUpdate();
+		preparedStatement1.close();
+		connection1.close();
+		return name+" is deleted";
+	}
+	else{
+		preparedStatement1.close();
+		connection1.close();
+		return name+" is not deleted";
+
+		}
+	connection1.commit();
+	}
+	catch (SQLException e1) {
+		try {
+
+			connection1.rollback();
+			/*on va annuler les executions faites si un problème arrive avec rollback*/
+
+		} catch (SQLException e2) {
+			e1.printStackTrace();
+			/*pour afficher les details de l'erreur pour le diagnostic pour mentionner ce qui arrivé
+			 *  et dans quel bout de code il y a un problème */
+		}
+	}
+	connection1.close();
+	/*on ferme la connection */
+	}
+	
+	
+}
+	
+	/**
+	 * Méthode pour lister les competitions
+	 */
+	public static LinkedList<Competition> listCompetition(String name) throws SQLException {
+	
+		LinkedList<Competition> list_competition= new LinkedList<Competition>();
+
+		try{
+		
+		
+		/* pareil on ouvre une nouvelle connection à la base */
+		Connection connection1 = DatabaseConnection.getConnection();
+		/* on prepare une prepared statemnet */
+		PreparedStatement preparedStatement1 = connection1.prepareStatement("SELECT * FROM competition");
+		
+		ResultSet resultSet1 = preparedStatement1.executeQuery();
+		/* on va maintenant chercher dans le resultat s'il y a une competition avec un name pareil */
+
+		while (resultSet1.next()) {
+			/*remarque tres importante pour ce qui suit:
+			 *on a plusieurs competitions dans notre base de données , donc à chaque fois on instancie une compétition 
+			 *et on l'ajoute dans notre liste de competitions**/
+			Competition compet = new Competition(
+					resultSet1.getString("name"),
+					resultSet1.getDate("closingdate")
+					);
+			list_competition.add(compet);
+		}
+
+		resultSet1.close();
+		preparedStatement1.close();
+		connection1.close();
+
+		
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+		return list_competition;
+	}
+
+	
+	
+
+	/** 
+	 * Méthode pour chercher une compétition
+	 */
+	
+	public static Competition findByName(String competitionName) {
+		Competition competition = null;
+		Connection c = DBConnection.newConnection();
+		try{
+			PreparedStatement psSelect = c.prepareStatement("select * from competition where name = ?");
+			psSelect.setString(1, competitionName);
+			ResultSet resultSet = psSelect.executeQuery();
+			if(resultSet.next()){
+				competition = new Competition(resultSet.getString("name"),resultSet.getDate("closing_date"));
+				}
+			resultSet.close();
+			psSelect.close();
+			c.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return competition;
+		}
+/************************************
+ * **************************************** A REFAIRE AVEC LE CHANGEMENT DES TABLES*******************************
+ */
+	/**
+	 * Méthode pour chercher un compétiteur
+	 */
+	public  void insertCompetitor(Competition competition, Competitor competitor) throws SQLException{
+		Connection c = DBConnection.newConnection();
+		try{
+            PreparedStatement psInsert = c.prepareStatement("INSERT INTO participation VALUES (?,?)");
+            psInsert.setInt(1, ((Competitor) competitor).getId());
+            psInsert.setString(2, competition.getName());
+            psInsert.executeUpdate();
+            psInsert.close();
+            c.commit();
+		}
+		catch (SQLException e1) {
+			try {
+
+				c.rollback();
+				/*on va annuler les executions faites si un problème arrive avec rollback*/
+
+			} catch (SQLException e2) {
+				e1.printStackTrace();
+				/*pour afficher les details de l'erreur pour le diagnostic pour mentionner ce qui arrivé
+				 *  et dans quel bout de code il y a un problème */
+			}
+		}
+		c.close();
+    }
+	/*************************************************************************************************
+	 * ********************************************************************
+	 */
+	/**
+	 * Méthode pour supprimer un compétiteur
+	 */
+	public  void deleteCompetitor(Competition competition,Competitor competitor) throws SQLException{
+		Connection c = DBConnection.newConnection();
+		try {
+            PreparedStatement psDelete = c.prepareStatement("DELETE FROM participation WHERE competitor_id = ? AND competition_name = ?");
+            psDelete.setInt(1, ((Competitor) competitor).getId());
+            psDelete.setString(2, competition.getName());
+            psDelete.executeQuery();
+            psDelete.close();
+            c.commit();
+		}
+		catch (SQLException e1) {
+			try {
+
+				c.rollback();
+				/*on va annuler les executions faites si un problème arrive avec rollback*/
+
+			} catch (SQLException e2) {
+				e1.printStackTrace();
+				/*pour afficher les details de l'erreur pour le diagnostic pour mentionner ce qui arrivé
+				 *  et dans quel bout de code il y a un problème */
+			}
+		}
+		c.close();
+    }
+	
+	
+	
+
+	/**
+	 * Méthode pour donner un rank au compétiteur
+	 */
+    public  void rank(Competitor competitor,int rank,Competition competition) throws SQLException{
+    	Connection c = DBConnection.newConnection();
+        try{
+            PreparedStatement psUpdate = c.prepareStatement("UPDATE participation SET rank = ? WHERE competitor_id = ? AND competition_name = ?");
+            psUpdate.setInt(1, rank);
+            psUpdate.setInt(2, competitor.getId());
+            psUpdate.setString(3, competition.getName());
+            psUpdate.executeUpdate();
+            psUpdate.close();
+            
+            c.commit();
+    	}
+    	catch (SQLException e1) {
+    		try {
+
+    			c.rollback();
+    			/*on va annuler les executions faites si un problème arrive avec rollback*/
+
+    		} catch (SQLException e2) {
+    			e1.printStackTrace();
+    			/*pour afficher les details de l'erreur pour le diagnostic pour mentionner ce qui arrivé
+    			 *  et dans quel bout de code il y a un problème */
+    		}
+    	}
+    
+    	c.close();
+    }
+    
+    /**
+     * Méthode pour faire un poduim
+     */
+
+    public void settlePoduim(String competition,Competitor competitor1,Competitor competitor2,Competitor competitor3) throws SQLException{
+    	Competition compet=findByName(competition);
+    	rank(competitor1,1,compet);
+    	rank(competitor2,2,compet);
+    	rank(competitor3,3,compet);
+    }
+    
+    /**
+     * Méthode pour faire un poduim
+     */
+    
+    public void settlePoduim(String competition,Competitor competitor) throws SQLException{
+    	Competition compet=findByName(competition);
+
+    	rank(competitor,1,compet);    	
+    }
+    
+    }
+    
+
+    
+

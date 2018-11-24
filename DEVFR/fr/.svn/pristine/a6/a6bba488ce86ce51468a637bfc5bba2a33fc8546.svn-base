@@ -1,0 +1,18 @@
+package fr.uv1.bettingServices.exceptions;
+
+/**
+ * @author Rochd Maliki
+ *
+ */
+public class BadParametersException extends Exception {
+	
+	public BadParametersException(){
+	super();
+	
+
+	}
+
+public BadParametersException(String message){
+	super(message);
+	}
+}

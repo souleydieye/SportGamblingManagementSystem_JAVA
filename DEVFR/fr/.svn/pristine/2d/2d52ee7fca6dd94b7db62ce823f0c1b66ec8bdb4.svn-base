@@ -1,0 +1,45 @@
+package fr.uv1.bettingServices.db;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class DBConnectionOracle {
+	
+	private final static String DEFAULT_HOST = "localhost";
+    private final static String DEFAULT_NAME = "filrouge";
+    private final static String DEFAULT_USER = "rmaliki";
+    private final static String DEFAULT_PASS = "ORA5816";
+
+	Connection con = null;
+	// On spécifie dans le constructeur le Driver Oracle qu'on doit ajouter dans l'onglet project
+	public DBConnectionOracle () {
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+	};
+	
+	// méthode pour ouvrir la connection
+	public void open() throws SQLException{
+		try{
+		if(this.con==null && this.con.isClosed())
+			con=DriverManager.getConnection("jdbc:oracle:thin:"+DEFAULT_USER+"/"+DEFAULT_PASS+"@"+DEFAULT_HOST);
+		}
+		catch(SQLException e) { throw e; }
+	}
+	//méthode pour fermer la connection
+	public void close() throws SQLException{
+			try{
+			if(this.con!=null && !this.con.isClosed())
+				con.close();
+			}
+			catch(SQLException e) { throw e; }
+	}
+	// méthode pour se connecter à notre base de donnée
+	public  Connection newConnection() throws SQLException {
+		this.open();
+		return this.con;
+		
+	}
+
+}

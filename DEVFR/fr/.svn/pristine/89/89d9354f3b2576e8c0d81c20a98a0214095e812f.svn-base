@@ -1,0 +1,247 @@
+package fr.uv1.bettingServices.player;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+
+/**
+ * @author debbabi <br>
+ * <br> 
+ * Class Player <br>
+ * 
+ */ 
+
+public class Player {
+
+	private static final String DEFAULT_PASSWORD = "0000";
+	private static final long DEFAULT_TOKENS = 0L;
+	
+	private String lastName;
+    private String firstName;
+    private String userName;
+    private Date bornDate;
+    private String pwdPlayer;
+    private long nbTokens;
+    /*   LinkedList<Bet> listBets= new LinkedList<Bet>();
+    on va la manupiler la liste directement du programme principal
+*/
+
+    /**
+     * Player Constructor with 4 arguments
+     * @param lastName
+     * @param firstName
+     * @param username
+     * @param borndate
+     */
+    public Player(String lastName, String firstName, String username, Date borndate) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.userName = username;
+        this.bornDate = borndate;
+        this.pwdPlayer= DEFAULT_PASSWORD;
+        this.nbTokens= DEFAULT_TOKENS;
+        
+    }
+    
+    
+    /** 
+     * Player Constructor with 5 arguments
+     * @param lastName
+     * @param firstName
+     * @param username
+     * @param borndate
+     * @param initialCredit
+     */
+    public Player(String lastName, String firstName, String username, Date borndate,long initialCredit) {
+        this(lastName, firstName, username, borndate);
+        this.nbTokens= initialCredit;
+    }
+
+
+    /**
+     * changes current user password to a new one
+     * @param newPwd
+     *		new user password
+     * @param currentPwd
+     *		current user password
+     */
+    public boolean changeSubsPwd(String newPwd, String currentPwd){
+        if(passwordVerified(currentPwd)){
+            pwdPlayer = newPwd;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Checks if the entered user username and password are correct
+     * @param userNameEntered
+     * @param pwdPlayerEntered
+     * @return
+     */
+    public boolean authentificatePlayer(String userNameEntered,String pwdPlayerEntered){
+    	return (usernameVerified(userNameEntered) && passwordVerified(pwdPlayerEntered)) ? true : false;
+    }
+
+    /**
+     * Increasing the subscriber number of tokens with an amount
+     * @param numberTokens
+     * @return
+     */
+    public long creditSubscriber(long numberTokens){
+    	if(numberTokens > 0){
+    		nbTokens=nbTokens+numberTokens;
+    		return nbTokens;
+    	}
+    	else  
+    		return -1;
+    }
+    
+    /**
+     * Subtract a specific amount of tokens from the user credit
+     * @param numberTokensToDebit
+     * @return
+     */
+    public long debitSubscriber(long numberTokensToDebit){
+    	if(numberTokensToDebit > 0 && numberTokensToDebit <= nbTokens){
+    		nbTokens=nbTokens-numberTokensToDebit;
+    		return nbTokens;
+    	}
+    	else return -1;
+    }
+  
+	public ArrayList<String> infosSubscriber(){
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(lastName);
+		list.add(firstName);
+		list.add(userName);
+		list.add(bornDate.toString());
+		list.add(new Long(nbTokens).toString());
+		return list;
+	}
+	
+    /**
+     * lastName getter
+     * @return
+     */
+	public String getLastName() {
+		return lastName;
+	}
+
+
+	/**
+	 * lastName setter
+	 * @param lastName
+	 */
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+
+	/**
+	 * firstName getter
+	 * @return
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+
+
+	/**
+	 * firstName setter
+	 * @param firstName
+	 */
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+
+	/**
+	 * username getter
+	 * @return
+	 */
+	public String getUserName() {
+		return userName;
+	}
+
+
+	/**
+	 * username setter
+	 * @param userName
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+
+	/**
+	 * borndate getter
+	 * @return
+	 */
+	public Date getBornDate() {
+		return bornDate;
+	}
+
+
+	/**
+	 * borndate setter
+	 * @param bornDate
+	 */
+	public void setBornDate(Date bornDate) {
+		this.bornDate = bornDate;
+	}
+
+
+	/**
+	 * player password getter
+	 * @return
+	 */
+	public String getPwdPlayer() {
+		return pwdPlayer;
+	}
+
+
+	/**
+	 * player password setter
+	 * @param pwdPlayer
+	 */
+	public void setPwdPlayer(String pwdPlayer) {
+		this.pwdPlayer = pwdPlayer;
+	}
+    
+	
+	/**
+	 * number of tokens getter
+	 * @return
+	 */
+	public long getNbTokens() {
+		return nbTokens;
+	}
+	
+	/**
+	 * number of tokens setter
+	 * @param nbTokens
+	 */
+	public void setNbTokens(long nbTokens) {
+		this.nbTokens = nbTokens;
+	}
+	
+
+	/**
+	 * Verify that the user password matches the entered password
+	 * @param pwd
+	 * @return
+	 */
+	private boolean passwordVerified(String enteredPassword) {
+		return pwdPlayer.equals(enteredPassword);
+	}
+	
+	/**
+	 * Verify that the user username matches the entered username
+	 * @param enteredUsername
+	 * @return
+	 */
+	private boolean usernameVerified(String enteredUsername) {
+		return userName.equals(enteredUsername);
+	}
+    
+}

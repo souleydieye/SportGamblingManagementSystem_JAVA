@@ -1,0 +1,36 @@
+/**
+ * 
+ */
+package tests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import fr.uv1.bettingServices.player.Player;
+
+/**
+ * @author asamimoh
+ *
+ */
+public class PlayerTest {
+
+	private Player user;
+	
+	@Before
+	public void before() {
+		user = new Player("ElMorsy", "Ahmed", "asamimoh", null);
+	}
+	
+	/**
+	 * Case 1: Object is defined Correctly
+	 */
+	@Test
+	public void objectIsWellDefined() {
+		assertSame("ElMorsy", user.getLastName());
+		assertSame("Ahmed", user.getFirstName());
+		assertSame("asamimoh", user.getUserName());
+	}
+
+}

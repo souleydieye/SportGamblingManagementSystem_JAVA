@@ -1,0 +1,204 @@
+package fr.uv1.bettingServices.competitor;
+
+import java.sql.Date;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.competitor.Competitor;
+
+import fr.uv1.bettingServices.competitor.PersonDAO;
+
+/**
+ * @author Rochd MALIKI
+ * 
+ * */
+
+
+public class Person extends Competitor {
+	//Regular expression to verify names
+	private final static String VERIFYNAMES = "[A-Za-z\\-]{2,}";
+	private String team;
+	private String firstName;
+	private String lastName;
+	private Date bornDate;
+	private int id; 
+	/**
+	 * 
+	 */
+	public Person(){
+		
+	}
+	 /**
+     * 
+     * @param lastName
+     * @param firstName
+     * @param borndate
+     * 
+     * @throws BadParametersException
+     */
+	public Person(String firstName, String lastName, Date bornDate) throws BadParametersException {
+		
+		//checking if the competitor is not born in the future
+		Date now = new Date(System.currentTimeMillis());
+		if(bornDate.after(now))
+			throw new BadParametersException("Competitor's borndate is invalid");
+		
+		this.firstName=firstName;
+		this.lastName=lastName;
+		this.bornDate=bornDate;
+		
+		//checking if the competitor s name is valid
+		if (!(this.hasValidName())) 
+			throw new BadParametersException("Competitor's firstname and/or lastname are invalid");
+		
+		
+	}
+	
+	 /**
+     * 
+     * @param firstName
+     * 
+     * @throws BadParametersException
+     * @throws ClassNotFoundException
+	 * @throws SQLException 
+     */
+	//First name setter
+	public void setFirstName(String firstName) throws BadParametersException, ClassNotFoundException, SQLException {
+		this.firstName=firstName;
+		PersonDAO.update(this);
+	}
+	/**
+	 *@return firstName 
+	 */
+	
+	//First Name getter
+	public String getFirstName() {
+		return this.firstName;
+	}
+	
+	 /**
+     * 
+     * @param lastName
+     * 
+     * @throws BadParametersException
+     * @throws ClassNotFoundException
+	 * @throws SQLException 
+     */
+	//Last name setter
+	public void setLastName(String lastName) throws BadParametersException, ClassNotFoundException, SQLException {
+		this.lastName=lastName;
+		PersonDAO.update(this);
+
+		
+	}
+	
+	 /**
+     * 
+     * @param lastName 
+     */
+	//last name getter
+	public String getLastName() {
+		return this.lastName;
+	}
+	
+	
+	 /**
+     * 
+     * @param bornDate
+     * 
+     * @throws BadParametersException
+     * @throws ClassNotFoundException
+	 * @throws SQLException 
+     */
+	//born date setter
+	public void setBornDate(Date bornDate) throws ClassNotFoundException, BadParametersException, SQLException {
+		Date now = new Date(System.currentTimeMillis());
+		if(bornDate.after(now)){
+			throw new BadParametersException("Competitor's borndate is invalid");
+		}
+		this.bornDate=bornDate;
+
+		PersonDAO.update(this);
+
+	}
+	
+	//born date getter
+	public Date getBornDate() {
+		return this.bornDate;
+	}
+	 /**
+     * 
+     * @param id
+     */
+	//id setter
+	public void setId(int id) {
+		this.id = id;
+		//Do not need to update id in DATABASE since it is auto-incremented
+		
+	}
+	
+	//id getter
+	public int getId() {
+		return this.id;
+	}
+	// Team sette
+	public void setTeam(String team){
+		this.team=team;
+	}
+	// Team getter
+	public String getTeam(){
+		return team;
+	}
+	
+	
+	 /**
+     * 
+     * @return true if this has a valid name
+     */
+	
+	@Override
+	public boolean hasValidName () {
+	
+		//the first name and last name must contain more than 2 characters
+		//it can contain only letters ( upper or under case) and underscores (for complex names)
+		return firstName.matches(VERIFYNAMES) && lastName.matches(VERIFYNAMES);
+	}
+	
+
+
+	 /**
+     * @param other an other competitor
+     * 
+     * @return true if it is the same person
+     */
+	
+
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+		if (!(other instanceof Person))
+			return false;
+
+		Person competitor = (Person) other;
+		return (this.firstName.equals(competitor.getFirstName()) &&
+				this.lastName.equals(competitor.getLastName()) &&
+				this.getBornDate().getTime() == competitor.getBornDate().getTime());
+	}
+	 /**
+     * 
+     * 
+     * @return Person description
+     */
+	
+	public String toString(){
+		String date = new SimpleDateFormat("dd-MM-yyyy").format(this.bornDate);
+		return this.firstName + "," + this.lastName + "," + date;
+	}
+}
+
+
+
+

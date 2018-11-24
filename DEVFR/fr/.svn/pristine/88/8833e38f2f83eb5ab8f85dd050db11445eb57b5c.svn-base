@@ -1,0 +1,102 @@
+package fr.uv1.bettingServices.competition;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import fr.uv1.bettingServices.Competitor;
+import fr.uv1.bettingServices.competitor.Person;
+import fr.uv1.bettingServices.db.DBConnection;
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+
+public class CompetitionDAO {
+	
+	public static Competition findByName(String competitionName) {
+		Competition competition = null;
+		try(Connection c = DBConnection.newConnection();) {
+			PreparedStatement psSelect = c.prepareStatement("select * from competition where name = ?");
+			psSelect.setString(1, competitionName);
+			ResultSet resultSet = psSelect.executeQuery();
+			if(resultSet.next()){
+				competition = new Competition(resultSet.getString("name"),resultSet.getDate("closing_date"));
+				}
+			resultSet.close();
+			psSelect.close();
+			c.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return competition;
+		}
+
+	public static void insertCompetitor(Competition competition, Competitor competitor) {
+		try(Connection c = DBConnection.newConnection()) {
+            PreparedStatement psInsert = c.prepareStatement("INSERT INTO participation VALUES (?,?,?)");
+            psInsert.setInt(1, ((Competitor) competitor).getId());
+            psInsert.setString(2, competition.getName());
+            psInsert.executeUpdate();
+            psInsert.close();
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		
+    }
+	
+	public static void deleteCompetitor(Competition competition,Competitor competitor){
+		try(Connection c = DBConnection.newConnection()) {
+            PreparedStatement psDelete = c.prepareStatement("DELETE FROM participation WHERE competitor_id = ? AND competition_name = ?");
+            psDelete.setInt(1, ((Competitor) competitor).getId());
+            psDelete.setString(2, competition.getName());
+            psDelete.executeQuery();
+            psDelete.close();
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	public static void insertCompetition(Competition competition) throws SQLException
+	{
+		Connection c = DBConnection.newConnection();
+	    try{
+	    	PreparedStatement psInsertCompet = c.prepareStatement("insert into competition  values (?, ?)");
+	    	psInsertCompet.setString(1, competition.getName());
+	    	psInsertCompet.setDate(2, (Date) competition.getClosingDate());
+	    	psInsertCompet.executeUpdate();
+	    	psInsertCompet.close();
+	    	for (int i=0;i<competition.getCompetitors().size();i++){
+	    		PreparedStatement psInsertParticip = c.prepareStatement("insert into participation values (?,?)");
+	    		Competitor competitor = competition.getCompetitors().get(i);
+		    	psInsertParticip.setInt(1,competitor.getId());
+		    	psInsertParticip.setString(2, competition.getName());
+		   		psInsertParticip.executeUpdate();
+		  		psInsertParticip.close();
+	    	}
+	    }
+	    catch (SQLException e)
+	    {
+	    		e.printStackTrace();
+	    	}
+	}
+
+	
+    public static void rank(Competitor competitor,int rank,Competition competition) {
+        try(Connection c = DBConnection.newConnection()) {
+            PreparedStatement psUpdate = c.prepareStatement("UPDATE participation SET rank = ? WHERE competitor_id = ? AND competition_name = ?");
+            psUpdate.setInt(1, rank);
+            psUpdate.setInt(2, competitor.getId());
+            psUpdate.setString(3, competition.getName());
+            psUpdate.executeUpdate();
+            psUpdate.close();
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+}

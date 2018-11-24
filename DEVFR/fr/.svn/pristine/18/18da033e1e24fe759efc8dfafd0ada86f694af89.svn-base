@@ -1,0 +1,22 @@
+package fr.uv1.bettingServices.competitor;
+
+/**
+ * @author Rochd Maliki
+ *
+ */
+
+public abstract class Competitor {
+	/* TODO List
+	   J'ai besoin de la classe Team 
+	   Penser à définir un attribut d'indentification pour la classe Competitor
+	   La classe Competitor doit implémenter l'interface
+	   Redéfinir la méthode equals pour Team
+	*/ 
+	
+	/**
+	 * @return true if the name of the Competitor is valis
+	 */
+	public abstract boolean hasValidName();
+		
+	
+}

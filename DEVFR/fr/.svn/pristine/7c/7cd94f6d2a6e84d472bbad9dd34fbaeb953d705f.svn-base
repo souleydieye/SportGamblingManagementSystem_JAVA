@@ -1,0 +1,86 @@
+package fr.uv1.bettingServices.competitor;
+
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.exceptions.ExistingCompetitorException;
+
+import java.util.ArrayList;
+/**
+ * 
+ * @author Mohamed Amine Bourkhiss
+ * */
+public final class Team extends Competitor implements fr.uv1.bettingServices.Competitor{
+	//regular expression to verify the team name
+	private final static String NAMEPATTERN = "[A-Z][\\w\\-\\s]{3,}";
+	
+	private String name;
+	private ArrayList<Person> members;
+	private int id;
+	
+	public Team(){}
+	/**
+	 * 
+	 * @param name
+	 */
+	public Team(String name){
+		this.name=name;
+		members=new ArrayList<Person>();
+	}
+	/**
+	 * 
+	 */
+	@Override
+	public void addMember(fr.uv1.bettingServices.Competitor member)
+			throws ExistingCompetitorException, BadParametersException {
+		
+		for (Person oldMember : members) {
+			if(oldMember.equals(member)) 
+				throw new ExistingCompetitorException();
+			}
+		members.add((Person)member);
+		// TODO add this the data base
+	}
+	/**
+	 * 
+	 */
+	@Override
+	public void deleteMember(fr.uv1.bettingServices.Competitor member)
+			throws BadParametersException, ExistingCompetitorException {
+	
+			members.remove(member);
+		
+			
+		// TODO update database as well
+		
+		
+	}
+	/**
+	 * 
+	 */
+	@Override
+	public boolean hasValidName() {
+		boolean b=name.matches(NAMEPATTERN);
+		return b;
+	}
+	/**
+	 * 
+	 * @return id
+	 */
+	public int getId() {
+		return id;
+	}
+	/**
+	 * 
+	 * @param id
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	/**
+	 * 
+	 * @return name
+	 */
+	public String getName(){
+		return name;
+	}
+
+}

@@ -1,0 +1,539 @@
+package fr.uv1.bettingServices.manager;
+
+import java.sql.Connection;
+import java.sql.Date;
+
+import fr.uv1.bettingServices.competitor.*;
+import fr.uv1.bettingServices.exceptions.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.LinkedList;
+
+import fr.uv1.bettingServices.competition.*;
+import fr.uv1.bettingServices.db.*;
+
+
+/**
+ * @Naanani Hamza
+ */
+
+/*********************************** REMARQUES **************************************
+
+ * On peut mélanger les 2 classes pour avoir le Manager et comme ça , ça sera plus évident.
+ */
+
+public class CompetitionManager {
+	/**
+	 * Mot de passe du manager
+	 */
+	private static String managerPwd="";
+	
+/*******************************************************************************************
+ * Méthodes pour faciliter l'implémentation du code	
+ ***********************************************************************************/
+	
+	/**
+	 * Méthode pour chercher l'id d'une compétition, elle suppose déjà l'existence la compétition
+	 * @param c
+	 * @param competition
+	 * @return integer
+	 * @throws SQLException 
+	 */
+	public static int chercherIdCompetition(Connection c,String competition) throws SQLException{
+		int idCompetition=0;
+	PreparedStatement chercherIdCompetition = c.prepareStatement("Select id from competition where name=?");
+	chercherIdCompetition.setString(1, competition);
+	ResultSet id_compet= chercherIdCompetition.executeQuery();
+	while(id_compet.next()){
+		idCompetition=id_compet.getInt("idcompetition");
+	}
+	chercherIdCompetition.close();
+	return idCompetition;
+	}
+
+	
+	/**
+	 * méthode pour vérifier le password du manager
+	 * @param managerPwd
+	 * @throws AuthenticationException
+	 */
+	static void authenticateMngr(String pass) throws AuthenticationException{
+		if (!(managerPwd==pass)){throw new AuthenticationException();}
+	}
+
+	/**
+	 * Méthode pour transformer une date en calendrier
+	 * @param date
+	 * @return calendar
+	 */
+	public static Calendar toCalendar(Date date){ 
+		  Calendar cal = Calendar.getInstance();
+		  cal.setTime(date);
+		  return cal;
+		}
+	
+	/**
+	 * Méthode pour vérifier la bonne mise à jour après une requête sql
+	 * @param c
+	 * @param e1
+	 * @throws SQLException
+	 */
+	public static void verifierBonneMAJ(Connection c,SQLException e1) throws SQLException{
+		
+			try {
+
+				c.rollback();
+				/*on va annuler les executions faites si un problème arrive avec rollback*/
+
+			} catch (SQLException e2) {
+				e1.printStackTrace();
+				/*pour afficher les details de l'erreur pour le diagnostic pour mentionner ce qui arrivé
+				 *  et dans quel bout de code il y a un problème */
+			}
+		}
+	
+	/**
+	 * Méthode qui renvoie true si la compétition existe dans la base de donnée et false sinon
+	 * @param competitionName
+	 * @return Boolean
+	 * @throws SQLException
+	 * @throws BadParametersException
+	 */
+	public static boolean findByName(String competitionName) throws SQLException, BadParametersException {
+		Competition competition = null;
+		Connection c = DBConnection.newConnection();
+		try{
+			PreparedStatement psSelect = c.prepareStatement("select * from competition where name = ?");
+			psSelect.setString(1, competitionName);
+			ResultSet resultSet = psSelect.executeQuery();
+			if(resultSet.next()){
+				competition = new Competition(resultSet.getString("name"),resultSet.getDate("closingdate"));
+				}
+			resultSet.close();
+			psSelect.close();
+			
+		} catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+		
+		if (competition==null){
+			return false;
+		}
+		else {
+			return true;
+		}
+		}
+	/**
+	 * Méthode qui renvoie  la compétition 
+	 * @param competitionName
+	 * @return
+	 * @throws SQLException
+	 * @throws BadParametersException
+	 */
+	public static Competition findByName1(String competitionName) throws SQLException, BadParametersException {
+		Competition competition = null;
+		Connection c = DBConnection.newConnection();
+		try{
+			PreparedStatement psSelect = c.prepareStatement("select * from competition where name = ?");
+			psSelect.setString(1, competitionName);
+			ResultSet resultSet = psSelect.executeQuery();
+			if(resultSet.next()){
+				competition = new Competition(resultSet.getString("name"),resultSet.getDate("closingdate"));
+				}
+			resultSet.close();
+			psSelect.close();
+			
+		} catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+		
+		return competition;
+			
+		}
+	
+	
+	/**
+	 * Méthode qui renvoie une compétition a partir de son ID
+	 * @param competitionName
+	 * @return
+	 * @throws SQLException
+	 * @throws BadParametersException
+	 * @throws ExistingCompetitionException 
+	 */
+	public static Competition findById(int ID) throws SQLException, BadParametersException, ExistingCompetitionException {
+		Competition competition = null;
+		Connection c = DBConnection.newConnection();
+		try{
+			PreparedStatement psSelect = c.prepareStatement("select * from competition where idcompetition = ?");
+			psSelect.setInt(1,ID);
+			ResultSet resultSet = psSelect.executeQuery();
+			if(resultSet.next()){
+				competition = new Competition(resultSet.getString("name"),resultSet.getDate("closingdate"));
+				competition.setId(ID);
+				}
+			resultSet.close();
+			psSelect.close();
+			
+		} catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+		if(competition==null){throw new ExistingCompetitionException("la compétition n'existe pas");}
+		return competition;
+		}	
+	/*****************************************************************************************/
+	/*****************************************************************************************/
+	/*****************************************************************************************/
+	
+	
+	/**
+	 * Methode pour ajouter une competition
+	 * 
+	 * @param competition
+	 * @throws SQLException
+	 * @throws ExistingCompetitionException
+	 * @throws BadParametersException
+	 */
+	
+	public static void addCompetition(String competition, Calendar closingDate,
+			Collection<Competitor> competitors, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException,
+			CompetitionException, BadParametersException, SQLException {
+		/*
+		 * On vérifie au début le password du manager
+		 */
+		authenticateMngr(managerPwd);
+		/** on va creer une nouvelle connection à la base de donnée*
+		 *  */
+		Connection c = DBConnection.newConnection();
+		/**
+		 * On crée une competition
+		 */
+		Competition compet=new Competition(competition,closingDate.getTime());
+		try {
+
+			/* avec cette preparedStatement on va inserer une competition à la base de données
+			 *
+			 */
+			PreparedStatement preparedStatement1 = c.prepareStatement("INSERT INTO competition (name, closingdate,"
+					+ "values (?, ?)");
+			/*
+			 * On cherche si la competition existe déjà
+			 */
+			if(findByName(competition)==false) {
+				/*
+				 * on prépare le statement
+				 */
+			preparedStatement1.setString(1, competition);
+			preparedStatement1.setDate(2, java.sql.Date.valueOf(closingDate.toString()));
+			}
+			
+			else{
+				throw new ExistingCompetitionException("La competition existe déjà");
+				}
+		
+			
+			/* faire de la mise à jour */
+			preparedStatement1.executeUpdate();
+			/* on va executer la prepared statement */
+			preparedStatement1.close();
+			/* on va fermer la preparedSTatement*/
+			c.commit();
+			/*on va valider avec commit les executions faites*/
+			PreparedStatement psIdValue = c.prepareStatement("select idperson_seq.currval from dual");
+			
+			ResultSet resultSet = psIdValue.executeQuery();
+            resultSet.next();
+			int id =  Integer.parseInt(resultSet.getString("idperson"));
+			
+			c.commit();
+			//the auto-incremented iD will be settled in person object
+			
+			compet.setId(id);
+		} catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+		}
+		c.close();
+		/*on ferme la connection */
+	}
+
+	
+	
+	/** 
+ 	* Méthode pour supprimer une competition
+	 * @param nom_competition
+	 * @throws SQLException
+	 * @throws BadParametersException 
+	 */
+	
+	public static void deleteCompetition(String competition, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException,
+			CompetitionException, SQLException, BadParametersException{
+		
+	authenticateMngr(managerPwd);
+	
+	if ((findByName(competition))==false){throw new ExistingCompetitionException("la competition n'existe pas");}
+	Connection connection1 = DBConnection.newConnection();
+	
+	try{
+		
+	PreparedStatement preparedStatement1 = connection1
+			.prepareStatement("DELETE FROM competition WHERE name LIKE ?");
+	preparedStatement1.setString(1,competition );
+	preparedStatement1.executeUpdate();
+	preparedStatement1.close();
+	connection1.commit();
+    connection1.close();
+		
+	
+	}
+	catch (SQLException e1) {
+		verifierBonneMAJ(connection1,e1);
+
+	}
+	connection1.close();
+	/*on ferme la connection */
+	}
+	
+	
+
+	
+	/**
+	 * Méthode pour lister les competitions
+	 * 
+	 * @param name
+	 * @return LinkedList
+	 * @throws SQLException
+	 * @throws BadParametersException
+	 */
+	public static LinkedList<Competition> listCompetition(String name) throws SQLException, BadParametersException {
+	
+		LinkedList<Competition> liste_competition= new LinkedList<Competition>();
+		/* pareil on ouvre une nouvelle connection à la base */
+
+		Connection c = DBConnection.newConnection();
+
+		try{
+		
+		
+		/* on prepare une prepared statemnet */
+		PreparedStatement preparedStatement1 = c.prepareStatement("SELECT * FROM competition");
+		
+		ResultSet resultSet1 = preparedStatement1.executeQuery();
+		/* on va maintenant chercher dans le resultat s'il y a une competition avec un name pareil */
+
+		while (resultSet1.next()) {
+			/*remarque tres importante pour ce qui suit:
+			 *on a plusieurs competitions dans notre base de données , donc à chaque fois on instancie une compétition 
+			 *et on l'ajoute dans notre liste de competitions**/
+			Competition compet = new Competition(resultSet1.getString("name"),resultSet1.getDate("closingdate"));
+			liste_competition.add(compet);
+		}
+
+		resultSet1.close();
+		preparedStatement1.close();
+		
+
+		
+		}
+		catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+		return liste_competition;
+		}
+
+	
+	/**
+
+	/** 
+
+	
+	
+	
+	/**
+	 * Méthode pour insérer un compétiteur dans une compétition
+	 * @param competition
+	 * @param competitor
+	 * @throws SQLException
+	 */
+	public  void addCompetitor(String competition, Competitor competitor,
+			String managerPwd) throws AuthenticationException,
+			ExistingCompetitionException, CompetitionException,
+			ExistingCompetitorException, BadParametersException, SQLException{
+		/*
+		 * On vérifie le mot de pass du manager
+		 */
+		authenticateMngr(managerPwd);
+		/*
+		 * On cherche si la compétition existe déjà
+		 */
+		if (findByName(competition)==false){throw new ExistingCompetitionException("la compétition n'existe pas");}
+		
+		/*
+		 * On ouvre la connection
+		 */
+		Connection c = DBConnection.newConnection();
+		/*
+		 * On prépare notre statement
+		 */
+		
+		try{
+		
+            PreparedStatement psInsert = c.prepareStatement("INSERT INTO competitionandcompetitor VALUES (?,?)");
+            psInsert.setInt(1, ((Competitor) competitor).getIdCompetitor());
+            psInsert.setInt(2, chercherIdCompetition(c,competition));
+            psInsert.executeUpdate();
+            psInsert.close();
+            c.commit();
+		}
+		catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+	
+    }
+	/**
+	 * Méthode pour supprimer un compétiteur d'une compétition
+	 *
+	 * @param competition
+	 * @param competitor
+	 * @throws BadParametersException 
+	 * @throws SQLException
+	 */
+	public static void deleteCompetitor(String competition, Competitor competitor,
+			String managerPwd) throws AuthenticationException,
+			ExistingCompetitionException, CompetitionException,
+			ExistingCompetitorException, SQLException, BadParametersException{
+		/*
+		 * On vérifie mot de pass manager
+		 */
+		authenticateMngr(managerPwd);
+		/*
+		 * On cherche si la compétition existe déjà
+		 */
+		if(findByName(competition)==false){throw new ExistingCompetitionException("la compétition n'existe pas");
+		/*
+		 * On se connecte à la base de donnée
+		 */
+		}
+		Connection c = DBConnection.newConnection();
+		try {
+            PreparedStatement psDelete = c.prepareStatement("DELETE FROM competitionandcompetitor WHERE competitor_id = ? AND competition_name = ?");
+            psDelete.setInt(1, ((Competitor) competitor).getIdCompetitor());
+            psDelete.setInt(2, chercherIdCompetition(c,competition));
+            psDelete.executeQuery();
+            psDelete.close();
+            c.commit();
+		}
+		catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+		}
+	
+	
+	
+
+	/**
+	 * Méthode pour donner un rank au compétiteur
+	 * 
+	 * @param competitor
+	 * @param rank
+	 * @param competition
+	 * @throws SQLException
+	 */
+	private  static void rankCompetitor(Competitor competitor,String rank,String competition) throws SQLException{
+		
+    	Connection c = DBConnection.newConnection();
+        try{
+            PreparedStatement psUpdate = c.prepareStatement("UPDATE competition SET competitor? = ? WHERE  idcompetition = ?");
+            psUpdate.setString(1, rank);
+            psUpdate.setInt(2, competitor.getIdCompetitor());
+            psUpdate.setInt(3, chercherIdCompetition(c,competition));
+            psUpdate.executeUpdate();
+            psUpdate.close();
+            
+            c.commit();
+    	}
+        catch (SQLException e1) {
+			verifierBonneMAJ(c,e1);
+
+		}
+		c.close();
+		/*on ferme la connection */
+		}
+    
+    
+    /**
+     * Méthode pour faire un poduim
+     * 
+     * @param competition
+     * @param competitor1
+     * @param competitor2
+     * @param competitor3
+     * @throws SQLException
+     * @throws BadParametersException
+     */
+	public static void settlePodium(String competition, Competitor winner, Competitor second,
+			Competitor third, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException,
+			CompetitionException, SQLException, BadParametersException{
+    	/*
+    	 * on vérifie le password du Manager
+    	 */
+    	authenticateMngr(managerPwd);
+    	/*
+    	 * On vérifie si la compétition existe
+    	 */
+    	if(findByName(competition)==false){throw new ExistingCompetitionException("La compétition n'existe pas");}
+    	
+    	rankCompetitor(winner,"1",competition);
+    	rankCompetitor(second,"2",competition);
+    	rankCompetitor(third,"3",competition);
+    }
+    
+    /**
+     * Méthode pour faire un poduim
+     * 
+     * @param competition
+     * @param competitor
+     * @throws SQLException
+     * @throws BadParametersException
+     */
+    public static void settleWinner(String competition, Competitor winner, String managerPwd)
+			throws AuthenticationException, ExistingCompetitionException,
+			CompetitionException, SQLException, BadParametersException{
+    	/*
+    	 * On vérifie le mot de pass du manager
+    	 */
+    	authenticateMngr(managerPwd);
+    	/*
+    	 * On vérifie l'existence de la compétition
+    	 */
+    	if(findByName(competition)==false){throw new ExistingCompetitionException("La compétition n'existe pas");}
+    	rankCompetitor(winner,"1",competition);    	
+    }
+}
+    
+    
+
+    
+

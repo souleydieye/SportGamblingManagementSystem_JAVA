@@ -1,0 +1,8 @@
+package fr.uv1.bettingServices.manager;
+/**
+ * @author gargouri <br>
+ */
+public class CompetitionManager {
+	
+
+}

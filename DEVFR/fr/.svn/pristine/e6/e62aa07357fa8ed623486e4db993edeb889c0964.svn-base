@@ -1,0 +1,151 @@
+package fr.uv1.bettingServices.competition;
+import fr.uv1.bettingServices.Competitor;
+import fr.uv1.bettingServices.bet.Bet;
+import fr.uv1.bettingServices.competitor.Team;
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.exceptions.CompetitionException;
+import fr.uv1.bettingServices.exceptions.ExistingCompetitionException;
+import fr.uv1.bettingServices.exceptions.ExistingCompetitorException;
+import fr.uv1.bettingServices.manager.CompetitionManager;
+import fr.uv1.utils.*;
+
+import java.sql.SQLException;
+import java.util.*;
+/**
+ * @author gargouri <br>
+ * <br> 
+ * Competition Class <br> 
+ * 
+ */
+public class Competition {
+	
+	private String name;
+	private Date closingDate;
+	private int id;
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	private ArrayList<Competitor> competitors = new ArrayList<Competitor>();
+	private ArrayList<Competitor> winners = new ArrayList<Competitor>();
+	private ArrayList<Bet> bets = new ArrayList<Bet>();
+	
+	private static final String VALID_NAME = "[\\w\\s\\-.]{4,}";
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public Date getClosingDate() {
+		return closingDate;
+	}
+	
+	public void setClosingDate(Date closingDate) {
+		this.closingDate = closingDate;
+	}
+	
+	public ArrayList<Competitor> getCompetitors() {
+		return competitors;
+	}
+	
+	public void setCompetitors(ArrayList<Competitor> competitors) {
+		this.competitors = competitors;
+	}
+	
+	public ArrayList<Competitor> getWinners() {
+		return winners;
+	}
+	
+	public void setWinners(ArrayList<Competitor> winners) {
+		this.winners = winners;
+	}
+	
+	public ArrayList<Bet> getBets() {
+		return bets;
+	}
+	
+	public void setBets(ArrayList<Bet> bets) {
+		this.bets = bets;
+	}
+
+	public Competition(String name, Date closingDate) {
+		this.name = name;
+		this.closingDate = closingDate;
+	}
+
+	public Competition(String name, Date closingDate, ArrayList<Competitor> competitors) throws ClassNotFoundException, SQLException, ExistingCompetitionException, CompetitionException, BadParametersException, ExistingCompetitorException{
+		if (CompetitionManager.findByName(name)){
+			throw new fr.uv1.bettingServices.exceptions.ExistingCompetitionException();
+              }
+		
+		if (Calendar.getInstance().getTime().after(closingDate)){
+			throw new fr.uv1.bettingServices.exceptions.CompetitionException("Provided closing date is invalid");
+	          }
+		
+		if (competitors == null ){
+			throw new BadParametersException("Empty competitors");
+		}	
+		
+		if (competitors.size() < 2){
+					throw new fr.uv1.bettingServices.exceptions.CompetitionException("There are less than two competitors in this competition");
+		                           }
+		
+		 if (name.length() < 4){
+	            throw new fr.uv1.bettingServices.exceptions.BadParametersException("the competition name must contain more than three letters");
+	        }
+		 
+		 if(!name.matches(VALID_NAME)){
+			 throw new fr.uv1.bettingServices.exceptions.BadParametersException("the competition name is invalid");
+		 }
+		 
+	      this.closingDate = closingDate;
+	      this.name = name;
+	      this.competitors = competitors;	
+	}
+	
+	public void addCompetitor(Competitor c) throws ExistingCompetitorException {
+		for (Competitor competitor: this.competitors){
+			if( competitor.equals(c) ){
+				throw new ExistingCompetitorException();
+			}
+		}
+		competitors.add(c);
+		CompetitionDAO.insertCompetitor(this, c);
+	}
+	
+	public void deleteCompetitor(Competitor competitor) {
+		competitors.remove(competitor);
+		CompetitionDAO.deleteCompetitor(this, competitor);
+	}
+
+    public Competitor findCompetitor(String name) {
+        for (Competitor comp : getCompetitors()) {
+            if (comp instanceof Team && ((Team) comp).getName().equals(name)) {
+                return comp;
+            }
+        }
+        return null;
+    }
+	
+	public boolean isClosed(){
+        Date today = new Date(System.currentTimeMillis());
+        return (today.after(this.closingDate));
+	}
+
+	
+
+	
+
+    
+	
+
+}

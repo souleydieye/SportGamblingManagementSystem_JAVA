@@ -1,0 +1,62 @@
+package competition;
+
+import static org.junit.Assert.*;
+
+import java.util.Date;
+
+import org.junit.Test;
+
+import fr.uv1.bettingServices.competition.Competition;
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.exceptions.CompetitionException;
+
+public class CompetitionTest {
+
+	@Test (expected = BadParametersException.class)
+	public void testCompetitionBadName1() throws BadParametersException, CompetitionException {
+		Competition competition1 = new Competition("+alfaBeta", new Date());	
+	}
+
+	@Test (expected = BadParametersException.class)
+	public void testCompetitionBadName2() throws BadParametersException, CompetitionException {
+		Competition competition2 = new Competition("al", new Date());	
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test 
+	public void testCompetitionBadName3() throws BadParametersException, CompetitionException {
+		Competition competition3 = new Competition("Alutiy", new Date(2018, 01, 02));	
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test (expected = CompetitionException.class)
+	public void testCompetitionBadName4() throws BadParametersException, CompetitionException {
+		Competition competition4 = new Competition("Alutiy", new Date(99, 01, 02));	
+	}
+	
+	@Test
+	public void testCompetitionStringDateArrayListOfCompetitor() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testAddCompetitor() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testDeleteCompetitor() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testFindCompetitor() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testIsClosed() {
+		fail("Not yet implemented");
+	}
+
+}

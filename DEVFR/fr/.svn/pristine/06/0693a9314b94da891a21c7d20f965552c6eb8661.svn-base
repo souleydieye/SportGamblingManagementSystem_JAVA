@@ -1,0 +1,96 @@
+/**
+ * 
+ */
+package player;
+
+import java.util.Date;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+import fr.uv1.bettingServices.exceptions.AuthenticationException;
+import fr.uv1.bettingServices.exceptions.BadParametersException;
+import fr.uv1.bettingServices.player.Player;
+
+/**
+ * @author asamimoh
+ *
+ */
+public class PlayerTest {
+	
+	/**
+	 * Case 1: Object is not defined correctly
+	 * 4 argument Constructor
+	 * Expecting a BadParametersException to be thrown
+	 * Date parameter is passed as null
+	 * @throws BadParametersException 
+	 */
+	@Test(expected=BadParametersException.class)
+	public void test1() throws BadParametersException {
+		Player player = new Player("Last", "First", "lastFirst", null);
+	}
+	
+	/**
+	 * Case 2: Object is not defined correctly
+	 * 5 argument Constructor
+	 * Expecting a BadParametersException to be thrown
+	 * Date parameter is passed as null
+	 * @throws BadParametersException 
+	 */
+	@Test(expected=BadParametersException.class)
+	public void test2() throws BadParametersException {
+		Player player = new Player("Last", "First", "lastFirst", null, 5L);
+	}
+	
+	/**
+	 * Case 3: Changing user password
+	 * changeSubsPwd
+	 * Expecting an AuthenticationException to be thrown
+	 * Entered password doesn't match the user password
+	 * @throws BadParametersException 
+	 * @throws AuthenticationException 
+	 */
+	@Test(expected=AuthenticationException.class)
+	public void test3() throws BadParametersException, AuthenticationException {
+		Player player = new Player("Last", "First", "lastFirst", new Date());
+		player.changeSubsPwd("1234", "4567");
+	}
+	
+	/**
+	 * Case 4: Credit user
+	 * Checks if player credit is updated
+	 * @throws BadParametersException 
+	 */
+	@Test
+	public void test4() throws BadParametersException {
+		Player player = new Player("Last", "First", "lastFirst", new Date());
+		
+		long currentCredit = player.getNbTokens();
+		long newCredit = player.creditSubscriber(10L);
+		
+		assertEquals(newCredit, currentCredit + 10L);
+		
+		// Checking if the value of player was really updated
+		assertEquals(newCredit, player.getNbTokens());
+	}
+	
+	/**
+	 * Case 5: check test on null value passed as current password parameter to change password
+	 * @throws BadParametersException 
+	 */
+	@Test(expected=BadParametersException.class)
+	public void test5() throws AuthenticationException,BadParametersException {
+		Player player = new Player("Last", "First", "lastFirst", new Date());
+		player.changeSubsPwd("jmkljm", null);
+	}
+
+	/**
+	 * Case 6: check test on null value passed as new password parameter to change password
+	 * @throws BadParametersException 
+	 */
+	@Test(expected=BadParametersException.class)
+	public void test6() throws AuthenticationException,BadParametersException {
+		Player player = new Player("Last", "First", "lastFirst", new Date());
+		player.changeSubsPwd(null, "currentpassword");
+	}
+}

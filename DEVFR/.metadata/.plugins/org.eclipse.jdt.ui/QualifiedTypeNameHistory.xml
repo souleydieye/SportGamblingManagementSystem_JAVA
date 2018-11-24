@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.sql.SQLException"/>
+<fullyQualifiedTypeName name="java.lang.String"/>
+<fullyQualifiedTypeName name="java.lang.Long"/>
+<fullyQualifiedTypeName name="java.lang.Override"/>
+<fullyQualifiedTypeName name="java.util.Calendar"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.Betting"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.player.Player"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.competitor.Person"/>
+<fullyQualifiedTypeName name="java.sql.Date"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.manager.PlayersManager"/>
+<fullyQualifiedTypeName name="java.util.Scanner"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.exceptions.AuthenticationException"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.exceptions.SubscriberException"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="fr.uv1.bettingServices.exceptions.BadParametersException"/>
+</qualifiedTypeNameHistroy>

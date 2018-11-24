@@ -1,0 +1,39 @@
+package fr.uv1.bettingServices.competition;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import fr.uv1.bettingServices.competitor.Person;
+import fr.uv1.bettingServices.db.DBConnection;
+
+public class CompetitionDAO {
+	
+	public static void insertCompetition(Competition c) throws SQLException{
+		Connection connection = DBConnection.newConnection();
+		try{
+			PreparedStatement ps = connection.prepareStatement("insert into COMPETITION values(?,?)");
+			ps.setString(1, c.getName());
+			ps.setDate(2, (Date) c.getClosingDate());
+			ps.executeUpdate();
+			ps.close();
+	    	}
+     catch(SQLException e){
+    	 e.printStackTrace();
+		}
+	}
+	
+	public static void delete(Competition competition) {
+		try(Connection c = DBConnection.newConnection()) {
+            PreparedStatement psDelete = c.prepareStatement("delete from COMPETITION where NAME like ?");
+            psDelete.setString(1, competition.getName());
+            psDelete.executeUpdate();
+            psDelete.close();
+            c.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+}

@@ -1,0 +1,10 @@
+package fr.uv1.bettingServices.exceptions;
+
+public class SubscriberException extends Exception{
+
+	public SubscriberException(String string) {
+		// TODO Auto-generated constructor stub
+		System.out.println(string);
+	}
+
+}
